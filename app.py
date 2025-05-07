@@ -124,9 +124,9 @@ for _, row in df.iterrows():
 # ROUTES
 ###############################################################################
 
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 ###############################################################################
 # API ENDPOINTS
