@@ -38,9 +38,10 @@ def parse_ctc(ctc_str):
         return None
     return nums[0] if len(nums) == 1 else sum(nums) / len(nums)
 
-# Load dataset
-csv_rel_path = os.path.join(os.path.dirname(__file__), 'filtered_dataset.csv')
-csv_alt_path = 'filtered_dataset.csv'
+
+csv_rel_path = os.path.join(os.path.dirname(__file__), 'static', 'filtered_dataset.csv')
+csv_alt_path = 'static/filtered_dataset.csv'
+
 
 if os.path.exists(csv_rel_path):
     df = pd.read_csv(csv_rel_path)
