@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Base URL for API (can be changed if needed)
     const BASE_URL = window.location.origin;
-    
+
     // Initialize tooltips and popovers
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
             backToTopBtn.classList.remove('visible');
         }
     });
-    
+
     backToTopBtn.addEventListener('click', function() {
         window.scrollTo({top: 0, behavior: 'smooth'});
     });
@@ -33,19 +33,19 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetId = this.getAttribute('href');
             const targetElement = document.querySelector(targetId);
-            
+
             // Update active state in sidebar
             document.querySelectorAll('.sidebar .nav-link').forEach(navLink => {
                 navLink.classList.remove('active');
             });
             this.classList.add('active');
-            
+
             // Scroll to the section
             window.scrollTo({
                 top: targetElement.offsetTop - 60,
                 behavior: 'smooth'
             });
-            
+
             // Close sidebar on mobile after navigation
             if (window.innerWidth < 992) {
                 document.body.classList.remove('sidebar-toggled');
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Helper to get darker border colors
     function getBorderColors(backgroundColors) {
-        return backgroundColors.map(color => 
+        return backgroundColors.map(color =>
             color.replace('0.7', '0.9').replace('0.6', '0.8').replace('0.5', '0.7')
         );
     }
@@ -90,10 +90,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function showError(chartId, message) {
         hideLoading(chartId);
         const chartWrapper = document.querySelector(`#${chartId}-container .chart-wrapper`);
-        const errorElement = document.createElement('div');
-        errorElement.className = 'error-message';
-        errorElement.textContent = message || 'Failed to load chart data';
-        chartWrapper.appendChild(errorElement);
+        if (chartWrapper) {
+            const errorElement = document.createElement('div');
+            errorElement.className = 'error-message';
+            errorElement.textContent = message || 'Failed to load chart data';
+            chartWrapper.appendChild(errorElement);
+        } else {
+            console.warn(`Chart wrapper for ${chartId} not found. Cannot display error message.`);
+        }
     }
 
     // Function to fetch data and render all charts
@@ -101,37 +105,38 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // --- Chart 1: Average CTC per Skill (Bar) ---
             await renderChart1();
-            
+
             // --- Chart 2: Company Count per Skill (Bar) ---
             await renderChart2();
-            
+
             // --- Chart 3: Company Count per Location (Bar) ---
             await renderChart3();
-            
+
             // --- Chart 6: Line chart Avg CTC across Skills ---
             await renderChart6();
-            
+
             // --- Chart 7: Pie chart Skill Demand ---
             await renderChart7();
-            
+
             // --- Chart 8: Pie chart Location Distribution ---
             await renderChart8();
-            
+
             // --- Chart 9: Avg CTC per Location (Bar) ---
             await renderChart9();
-            
+
             // --- Chart 10: Scatter plot CTC vs Avg CTC ---
             await renderChart10();
-            
+
             // --- Chart 11: Heatmap Skill vs Location ---
+            // Chart 11 has its own existence check in the renderChart11 function
             await renderChart11();
-            
+
             // --- Chart 12: Stacked bar chart Skills per Location ---
             await renderChart12();
-            
+
             // --- Chart 13: Bubble Chart Company vs CTC ---
             await renderChart13();
-            
+
         } catch (error) {
             console.error("Error rendering charts:", error);
         }
@@ -142,24 +147,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartId = 'chart1_avg_ctc_per_skill';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/1_avg_ctc_per_skill`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/1_avg_ctc_per_skill`)).json();
             let bgColors = generateColors(data.labels.length);
             hideLoading(chartId);
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'bar',
                 data: {
                     labels: data.labels,
-                    datasets: [{ 
-                        label: 'Average CTC', 
-                        data: data.values, 
-                        backgroundColor: bgColors, 
-                        borderColor: getBorderColors(bgColors), 
-                        borderWidth: 1 
+                    datasets: [{
+                        label: 'Average CTC',
+                        data: data.values,
+                        backgroundColor: bgColors,
+                        borderColor: getBorderColors(bgColors),
+                        borderWidth: 1
                     }]
                 },
-                options: { 
-                    responsive: true, 
+                options: {
+                    responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
@@ -170,8 +175,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             intersect: false,
                         }
                     },
-                    scales: { 
-                        y: { 
+                    scales: {
+                        y: {
                             beginAtZero: true,
                             title: {
                                 display: true,
@@ -184,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 minRotation: 45
                             }
                         }
-                    } 
+                    }
                 }
             });
         } catch (error) {
@@ -197,24 +202,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartId = 'chart2_company_count_per_skill';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/2_company_count_per_skill`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/2_company_count_per_skill`)).json();
             let bgColors = generateColors(data.labels.length);
             hideLoading(chartId);
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'bar',
                 data: {
                     labels: data.labels,
-                    datasets: [{ 
-                        label: 'Number of Companies', 
-                        data: data.values, 
-                        backgroundColor: bgColors, 
-                        borderColor: getBorderColors(bgColors), 
-                        borderWidth: 1 
+                    datasets: [{
+                        label: 'Number of Companies',
+                        data: data.values,
+                        backgroundColor: bgColors,
+                        borderColor: getBorderColors(bgColors),
+                        borderWidth: 1
                     }]
                 },
-                options: { 
-                    responsive: true, 
+                options: {
+                    responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
@@ -225,8 +230,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             intersect: false,
                         }
                     },
-                    scales: { 
-                        y: { 
+                    scales: {
+                        y: {
                             beginAtZero: true,
                             title: {
                                 display: true,
@@ -239,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 minRotation: 45
                             }
                         }
-                    } 
+                    }
                 }
             });
         } catch (error) {
@@ -252,24 +257,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartId = 'chart3_company_count_per_location';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/3_company_count_per_location`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/3_company_count_per_location`)).json();
             let bgColors = generateColors(data.labels.length);
             hideLoading(chartId);
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'bar',
                 data: {
                     labels: data.labels,
-                    datasets: [{ 
-                        label: 'Number of Companies', 
-                        data: data.values, 
-                        backgroundColor: bgColors, 
-                        borderColor: getBorderColors(bgColors), 
-                        borderWidth: 1 
+                    datasets: [{
+                        label: 'Number of Companies',
+                        data: data.values,
+                        backgroundColor: bgColors,
+                        borderColor: getBorderColors(bgColors),
+                        borderWidth: 1
                     }]
                 },
-                options: { 
-                    responsive: true, 
+                options: {
+                    responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
@@ -280,8 +285,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             intersect: false,
                         }
                     },
-                    scales: { 
-                        y: { 
+                    scales: {
+                        y: {
                             beginAtZero: true,
                             title: {
                                 display: true,
@@ -294,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 minRotation: 45
                             }
                         }
-                    } 
+                    }
                 }
             });
         } catch (error) {
@@ -307,9 +312,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartId = 'chart6_line_avg_ctc_skills';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/6_line_avg_ctc_skills`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/6_line_avg_ctc_skills`)).json();
             hideLoading(chartId);
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'line',
                 data: {
@@ -323,8 +328,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         fill: true
                     }]
                 },
-                options: { 
-                    responsive: true, 
+                options: {
+                    responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
@@ -335,8 +340,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             intersect: false,
                         }
                     },
-                    scales: { 
-                        y: { 
+                    scales: {
+                        y: {
                             beginAtZero: false,
                             title: {
                                 display: true,
@@ -362,11 +367,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartId = 'chart7_pie_skill_demand';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/7_pie_skill_demand`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/7_pie_skill_demand`)).json();
             let total = data.values.reduce((a, b) => a + b, 0);
             let bgColors = generateColors(data.labels.length);
             hideLoading(chartId);
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'pie',
                 data: {
@@ -411,11 +416,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartId = 'chart8_pie_location_distribution';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/8_pie_location_distribution`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/8_pie_location_distribution`)).json();
             const total = data.values.reduce((sum, val) => sum + val, 0);
             let bgColors = generateColors(data.labels.length);
             hideLoading(chartId);
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'pie',
                 data: {
@@ -468,24 +473,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartId = 'chart9_avg_ctc_per_location';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/9_avg_ctc_per_location`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/9_avg_ctc_per_location`)).json();
             let bgColors = generateColors(data.labels.length);
             hideLoading(chartId);
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'bar',
                 data: {
                     labels: data.labels,
-                    datasets: [{ 
-                        label: 'Average CTC', 
-                        data: data.values, 
-                        backgroundColor: bgColors, 
-                        borderColor: getBorderColors(bgColors), 
-                        borderWidth: 1 
+                    datasets: [{
+                        label: 'Average CTC',
+                        data: data.values,
+                        backgroundColor: bgColors,
+                        borderColor: getBorderColors(bgColors),
+                        borderWidth: 1
                     }]
                 },
-                options: { 
-                    responsive: true, 
+                options: {
+                    responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
@@ -496,8 +501,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             intersect: false,
                         }
                     },
-                    scales: { 
-                        y: { 
+                    scales: {
+                        y: {
                             beginAtZero: true,
                             title: {
                                 display: true,
@@ -510,7 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 minRotation: 45
                             }
                         }
-                    } 
+                    }
                 }
             });
         } catch (error) {
@@ -523,15 +528,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartId = 'chart10_scatter_ctc_vs_avg';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/10_scatter_ctc_vs_avg`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/10_scatter_ctc_vs_avg`)).json();
             hideLoading(chartId);
-            
+
             // Process data for scatter plot
             const skills = [...new Set(data.map(item => item.skill))];
             const datasets = skills.map((skill, index) => {
                 const skillData = data.filter(item => item.skill === skill);
                 const color = `hsl(${index * (360 / skills.length)}, 70%, 60%)`;
-                
+
                 return {
                     label: skill,
                     data: skillData.map(item => ({
@@ -544,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     pointHoverRadius: 7,
                 }
             });
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'scatter',
                 data: {
@@ -571,11 +576,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                     const company = context.raw.company || '';
                                     const xValue = context.parsed.x;
                                     const yValue = context.parsed.y;
-                                    
+
                                     // Format as Indian rupees (lakhs)
                                     const formattedCTC = (yValue / 100000).toFixed(2) + ' Lakhs';
                                     const formattedAvg = (xValue / 100000).toFixed(2) + ' Lakhs';
-                                    
+
                                     return [
                                         `Company: ${company}`,
                                         `Skill: ${skill}`,
@@ -628,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //         // Process the data for visualization
     //         const datasets = [];
     //         const maxValue = Math.max(...data.matrix.flat());
-            
+
     //         // Create a color scale function - from blue (low) to red (high)
     //         const getColor = (value) => {
     //             // Normalize the value between 0 and 1
@@ -636,17 +641,17 @@ document.addEventListener('DOMContentLoaded', function() {
     //             // Generate a color from blue (cold) to red (hot)
     //             return `rgba(${Math.round(normalized * 255)}, ${Math.round((1 - normalized) * 100)}, ${Math.round((1 - normalized) * 255)}, 0.8)`;
     //         };
-            
+
     //         // Create datasets for heatmap - one dataset per skill
     //         for (let i = 0; i < data.skills.length; i++) {
     //             const pointData = [];
-                
+
     //             for (let j = 0; j < data.locations.length; j++) {
     //                 // Only include non-zero values to avoid cluttering
     //                 if (data.matrix[i][j] > 0) {
     //                     // Format as Indian rupees (lakhs)
     //                     const formattedCTC = (data.matrix[i][j] / 100000).toFixed(2) + ' Lakhs';
-                        
+
     //                     pointData.push({
     //                         x: j,
     //                         y: i,
@@ -655,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //                     });
     //                 }
     //             }
-                
+
     //             datasets.push({
     //                 label: data.skills[i],
     //                 data: pointData,
@@ -666,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //                 pointHoverRadius: 12,
     //             });
     //         }
-            
+
     //         new Chart(document.getElementById(chartId), {
     //             type: 'scatter',
     //             data: {
@@ -723,15 +728,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function renderChart11() {
         const chartId = 'chart11_heatmap_skill_location';
+
+        // Check if chart element exists before proceeding
+        const chartElement = document.getElementById(chartId);
+        if (!chartElement) {
+            console.warn(`Chart element with ID ${chartId} not found. Skipping rendering.`);
+            return;
+        }
+
         showLoading(chartId);
-    
+
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/11_heatmap_skill_location`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/11_heatmap_skill_location`)).json();
             hideLoading(chartId);
-    
+
             const points = [];
             let maxValue = 0;
-    
+
             for (let i = 0; i < data.skills.length; i++) {
                 for (let j = 0; j < data.locations.length; j++) {
                     const value = data.matrix[i][j];
@@ -746,13 +759,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-    
+
             const getColor = (value) => {
                 const normalized = value / maxValue;
                 return `rgba(${Math.round(normalized * 255)}, ${Math.round((1 - normalized) * 100)}, ${Math.round((1 - normalized) * 255)}, 0.8)`;
             };
-    
-            new Chart(document.getElementById(chartId), {
+
+            new Chart(chartElement, {
                 type: 'scatter',
                 data: {
                     datasets: [{
@@ -803,28 +816,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-    
+
         } catch (error) {
             console.error("Error rendering chart 11:", error);
             showError(chartId);
         }
     }
-    
-    
+
+
 
 
     async function renderChart12() {
         const chartId = 'chart12_stacked_skills_location';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/12_stacked_skills_location`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/12_stacked_skills_location`)).json();
             let bgColors = generateColors(data.skills.length);
             hideLoading(chartId);
-            
+
             // Prepare datasets for the stacked bar chart
             const datasets = data.skills.map((skill, index) => {
                 const skillData = data.locations.map((loc, locIndex) => data.values[locIndex][index]);
-                
+
                 return {
                     label: skill,
                     data: skillData,
@@ -833,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     borderWidth: 1
                 };
             });
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'bar',
                 data: {
@@ -841,7 +854,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     datasets: datasets
                 },
                 options: {
-                    responsive: true, 
+                    responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
@@ -884,24 +897,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartId = 'chart13_bubble_company_ctc';
         showLoading(chartId);
         try {
-            let data = await (await fetch(`${BASE_URL}http://127.0.0.1:5000/api/13_bubble_company_ctc`)).json();
+            let data = await (await fetch(`${BASE_URL}/api/13_bubble_company_ctc`)).json();
             hideLoading(chartId);
-            
+
             // Group data by skill for better visualization
             const skillGroups = {};
             const skills = [...new Set(data.map(item => item.skill_required))];
-            
+
             // Create a dataset for each skill
             skills.forEach((skill, index) => {
                 const skillData = data.filter(item => item.skill_required === skill);
                 skillGroups[skill] = skillData;
             });
-            
+
             // Create datasets for each skill with a unique color
             const datasets = skills.map((skill, index) => {
                 const color = `hsl(${index * (360 / skills.length)}, 70%, 60%)`;
                 const items = skillGroups[skill];
-                
+
                 return {
                     label: skill,
                     data: items.map(item => ({
@@ -917,7 +930,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     borderWidth: 1
                 };
             });
-            
+
             new Chart(document.getElementById(chartId), {
                 type: 'bubble',
                 data: {
@@ -944,13 +957,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     const company = context.raw.company;
                                     const skill = context.raw.skill;
                                     const ctc = context.raw.ctc;
-                                    
+
                                     // Format as Indian rupees (lakhs)
                                     const formattedCTC = (ctc / 100000).toFixed(2) + ' Lakhs';
-                                    
+
                                     return [
-                                        `Company: ${company}`, 
-                                        `Skill: ${skill}`, 
+                                        `Company: ${company}`,
+                                        `Skill: ${skill}`,
                                         `CTC: ₹${formattedCTC}`
                                     ];
                                 }
@@ -988,13 +1001,13 @@ document.addEventListener('DOMContentLoaded', function() {
             showError(chartId);
         }
     }
-    
+
     // Handle chart export
     document.querySelectorAll('.export-chart').forEach(button => {
         button.addEventListener('click', function() {
             const chartId = this.getAttribute('data-chart-id');
             const canvas = document.getElementById(chartId);
-            
+
             // Create download link
             const link = document.createElement('a');
             link.download = `${chartId}.png`;
